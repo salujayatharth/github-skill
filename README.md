@@ -8,6 +8,7 @@
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](#)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blueviolet.svg)](https://claude.ai/code)
+[![Token Savings](https://img.shields.io/badge/token_savings-95%25-success.svg)](#progressive-disclosure)
 
 [Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Installation](#installation) • [Architecture](#architecture)
 
@@ -242,9 +243,17 @@ github-skill/
 |-------|---------|--------|-------------|
 | 1 | Skill metadata | ~50 | Always |
 | 2 | Decision tree | ~200 | Skill triggered |
-| 3 | Reference docs | Variable | On-demand |
+| 3 | Reference docs | ~400-800 each | On-demand |
 
-This architecture minimizes context usage while providing full GitHub functionality.
+#### Token Savings
+
+| Approach | Tokens Used | Context Cost |
+|----------|-------------|--------------|
+| **Traditional** (load everything) | ~4,500+ | High |
+| **Lazy loading** (this skill) | ~250 base | Minimal |
+| **Per operation** | +400-800 | Only what's needed |
+
+> **Result:** Up to **95% reduction** in context usage. Only the relevant reference file loads when you need it, keeping your context window free for actual work.
 
 ## Requirements
 
