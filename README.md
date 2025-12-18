@@ -8,7 +8,7 @@
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](#)
 [![Claude Code](https://img.shields.io/badge/Claude-Code-blueviolet.svg)](https://claude.ai/code)
-[![Token Savings](https://img.shields.io/badge/token_savings-95%25-success.svg)](#progressive-disclosure)
+[![Token Savings](https://img.shields.io/badge/tokens-99%25_less_than_MCP-success.svg)](#token-savings-vs-github-mcp)
 
 [Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Installation](#installation) • [Architecture](#architecture)
 
@@ -245,15 +245,24 @@ github-skill/
 | 2 | Decision tree | ~200 | Skill triggered |
 | 3 | Reference docs | ~400-800 each | On-demand |
 
-#### Token Savings
+#### Token Savings vs GitHub MCP
 
-| Approach | Tokens Used | Context Cost |
-|----------|-------------|--------------|
-| **Traditional** (load everything) | ~4,500+ | High |
-| **Lazy loading** (this skill) | ~250 base | Minimal |
-| **Per operation** | +400-800 | Only what's needed |
+| Approach | Tokens | vs GitHub MCP |
+|----------|--------|---------------|
+| [GitHub MCP](https://github.com/github/github-mcp-server) (all 91 tools) | ~46,000 | baseline |
+| GitHub MCP (optimized) | ~4,600-18,400 | 60-90% less |
+| **This skill** (base load) | ~250 | **99.5% less** |
+| **This skill** (per operation) | ~650-1,050 | **97-98% less** |
 
-> **Result:** Up to **95% reduction** in context usage. Only the relevant reference file loads when you need it, keeping your context window free for actual work.
+> **Why it matters:** GitHub MCP has been described as ["a masterclass in context pollution"](https://smcleod.net/2025/08/stop-polluting-context-let-users-disable-individual-mcp-tools/) — loading 46k tokens before you even ask a question. This skill loads ~250 tokens at startup, then only the reference docs you actually need.
+
+<details>
+<summary><b>Sources</b></summary>
+
+- [GitHub Changelog - Tool-specific configuration (Dec 2025)](https://github.blog/changelog/2025-12-10-the-github-mcp-server-adds-support-for-tool-specific-configuration-and-more/)
+- [Stop Polluting Context - smcleod.net](https://smcleod.net/2025/08/stop-polluting-context-let-users-disable-individual-mcp-tools/)
+
+</details>
 
 ## Requirements
 
