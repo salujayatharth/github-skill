@@ -1,13 +1,48 @@
+<div align="center">
+
 # GitHub Skill for Claude Code
 
-A Claude Code skill that provides complete GitHub API integration with lazy-loading toolsets. Replicates GitHub MCP functionality using pure Python (no dependencies).
+**Complete GitHub API integration with lazy-loading toolsets**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)](#)
+[![Claude Code](https://img.shields.io/badge/Claude-Code-blueviolet.svg)](https://claude.ai/code)
+
+[Features](#features) • [Quick Start](#quick-start) • [Usage](#usage) • [Installation](#installation) • [Architecture](#architecture)
+
+</div>
+
+---
 
 ## Features
 
-- **Full GitHub API Coverage** — Repositories, Issues, Pull Requests, Actions, Security, Search
-- **Lazy Loading** — Toolset documentation loads on-demand to minimize context usage
-- **Zero Dependencies** — Pure Python stdlib, works anywhere with Python 3
-- **CLI-First Design** — All scripts support `--help` and multiple output formats
+<table>
+<tr>
+<td width="50%">
+
+### Core Capabilities
+
+- **Repositories** — Files, branches, commits, forks
+- **Issues** — Full CRUD, comments, labels, milestones
+- **Pull Requests** — Create, review, merge, CI status
+- **Actions** — Workflow runs, logs, triggers
+- **Security** — Dependabot, code scanning, secrets
+- **Search** — Repos, code, issues, users, commits
+
+</td>
+<td width="50%">
+
+### Design Principles
+
+- **Zero Dependencies** — Pure Python stdlib
+- **Lazy Loading** — Minimal context usage
+- **CLI-First** — `--help` on every command
+- **Multiple Formats** — JSON, Markdown, minimal
+
+</td>
+</tr>
+</table>
 
 ## Quick Start
 
@@ -17,13 +52,17 @@ A Claude Code skill that provides complete GitHub API integration with lazy-load
 export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
 ```
 
-Required scopes depend on operations:
-| Operation | Scopes |
-|-----------|--------|
+<details>
+<summary><b>Token Scopes Reference</b></summary>
+
+| Operation | Required Scopes |
+|-----------|-----------------|
 | Public repos | `public_repo` |
 | Private repos | `repo` |
 | Actions | `workflow` |
 | Security | `security_events` |
+
+</details>
 
 ### 2. Verify Authentication
 
@@ -34,30 +73,26 @@ python scripts/github_client.py --check-auth
 ### 3. Start Using
 
 ```bash
-# List issues
 python scripts/issues.py list --owner octocat --repo Hello-World
-
-# Get file contents
-python scripts/repos.py get-file --owner octocat --repo Hello-World --path README.md
-
-# Search code
-python scripts/search.py code --query "def main repo:owner/repo"
 ```
 
-## Available Operations
+## Usage
 
-| Script | Operations |
-|--------|------------|
-| `repos.py` | Get/create files, branches, fork, create repos |
-| `issues.py` | List, create, update, comment, labels, lock |
-| `pull_requests.py` | Create, review, merge, check status, request reviewers |
-| `actions.py` | List runs, view logs, rerun, trigger workflows |
-| `code_security.py` | Dependabot, code scanning, secret scanning |
-| `search.py` | Search repos, code, issues, users, commits |
+### Available Commands
 
-## Usage Examples
+| Script | Commands | Description |
+|--------|----------|-------------|
+| `repos.py` | `get-file` `list-files` `create-file` `push-files` `create-branch` `create-repo` `fork` | Repository & file operations |
+| `issues.py` | `list` `get` `create` `update` `comment` `add-labels` `lock` | Issue management |
+| `pull_requests.py` | `list` `get` `create` `merge` `review` `status` `request-reviewers` | Pull request workflow |
+| `actions.py` | `list-runs` `get-run` `list-jobs` `get-logs` `rerun` `dispatch` `cancel` | GitHub Actions |
+| `code_security.py` | `dependabot-alerts` `code-scanning-alerts` `secret-scanning-alerts` | Security alerts |
+| `search.py` | `repos` `code` `issues` `users` `commits` | Search across GitHub |
 
-### Create a Pull Request
+### Examples
+
+<details>
+<summary><b>Create a Pull Request</b></summary>
 
 ```bash
 # Create feature branch
@@ -70,28 +105,52 @@ python scripts/pull_requests.py create \
   --owner myuser --repo myrepo \
   --title "Add feature X" \
   --head feature-x \
-  --base main
+  --base main \
+  --body "## Changes\n- Added feature X"
 ```
 
-### Check CI Status
+</details>
+
+<details>
+<summary><b>Check CI Status & Merge</b></summary>
 
 ```bash
+# Check status
 python scripts/pull_requests.py status \
   --owner myuser --repo myrepo \
   --number 42
+
+# Merge with squash
+python scripts/pull_requests.py merge \
+  --owner myuser --repo myrepo \
+  --number 42 \
+  --method squash
 ```
 
-### Triage Security Alerts
+</details>
+
+<details>
+<summary><b>Triage Security Alerts</b></summary>
 
 ```bash
-# List critical Dependabot alerts
+# List critical alerts
 python scripts/code_security.py dependabot-alerts \
   --owner myuser --repo myrepo \
   --severity critical,high \
   --state open
+
+# Dismiss as not used
+python scripts/code_security.py update-dependabot-alert \
+  --owner myuser --repo myrepo \
+  --alert-number 1 \
+  --state dismissed \
+  --reason not_used
 ```
 
-### Trigger Workflow
+</details>
+
+<details>
+<summary><b>Trigger Workflow</b></summary>
 
 ```bash
 python scripts/actions.py dispatch \
@@ -101,36 +160,73 @@ python scripts/actions.py dispatch \
   --inputs '{"environment": "production"}'
 ```
 
-## Output Formats
+</details>
 
-All scripts support `--format`:
+<details>
+<summary><b>Debug Failed CI</b></summary>
 
 ```bash
-# JSON (default) - for programmatic use
-python scripts/issues.py list --owner octocat --repo Hello-World --format json
+# List recent runs
+python scripts/actions.py list-runs \
+  --owner myuser --repo myrepo \
+  --status completed
 
-# Markdown - human readable
-python scripts/issues.py list --owner octocat --repo Hello-World --format markdown
+# Get job logs
+python scripts/actions.py get-job-logs \
+  --owner myuser --repo myrepo \
+  --job-id 12345
 
-# Minimal - compact JSON for piping
-python scripts/issues.py list --owner octocat --repo Hello-World --format minimal
+# Rerun failed jobs
+python scripts/actions.py rerun \
+  --owner myuser --repo myrepo \
+  --run-id 67890 \
+  --failed-only
 ```
 
-## Project Structure
+</details>
+
+### Output Formats
+
+```bash
+--format json      # Default, full JSON
+--format markdown  # Human-readable
+--format minimal   # Compact, for piping
+```
+
+## Installation
+
+### As Claude Code Skill
+
+```bash
+git clone https://github.com/salujayatharth/github-skill.git ~/.claude/skills/github
+```
+
+The skill auto-loads when Claude Code detects GitHub-related tasks.
+
+### Standalone CLI
+
+```bash
+git clone https://github.com/salujayatharth/github-skill.git
+cd github-skill
+export GITHUB_TOKEN=ghp_xxxx
+python scripts/issues.py --help
+```
+
+## Architecture
 
 ```
 github-skill/
-├── SKILL.md                 # Skill manifest with decision tree
+├── SKILL.md                    # Skill manifest + decision tree
 ├── scripts/
-│   ├── github_client.py     # Core API client
-│   ├── utils.py             # Shared utilities
-│   ├── repos.py             # Repository operations
-│   ├── issues.py            # Issue management
-│   ├── pull_requests.py     # PR operations
-│   ├── actions.py           # GitHub Actions
-│   ├── code_security.py     # Security alerts
-│   └── search.py            # Search operations
-└── references/              # Lazy-loaded documentation
+│   ├── github_client.py        # Core API client
+│   ├── utils.py                # Shared utilities
+│   ├── repos.py                # 10 commands
+│   ├── issues.py               # 12 commands
+│   ├── pull_requests.py        # 17 commands
+│   ├── actions.py              # 15 commands
+│   ├── code_security.py        # 12 commands
+│   └── search.py               # 6 commands
+└── references/                 # Lazy-loaded docs
     ├── repos.md
     ├── issues.md
     ├── pull-requests.md
@@ -140,32 +236,30 @@ github-skill/
     └── api-patterns.md
 ```
 
-## Installing as Claude Code Skill
+### Progressive Disclosure
 
-Copy to your Claude Code skills directory:
+| Level | Content | Tokens | When Loaded |
+|-------|---------|--------|-------------|
+| 1 | Skill metadata | ~50 | Always |
+| 2 | Decision tree | ~200 | Skill triggered |
+| 3 | Reference docs | Variable | On-demand |
 
-```bash
-cp -r github-skill ~/.claude/skills/github
-```
-
-The skill will be available in Claude Code with lazy-loading — only the relevant reference files load when needed.
-
-## Architecture
-
-### Three-Level Progressive Disclosure
-
-1. **Level 1 — Metadata** (~50 tokens): Skill name and description in SKILL.md frontmatter
-2. **Level 2 — Decision Tree** (~200 tokens): SKILL.md body with operation routing
-3. **Level 3 — References** (on-demand): Individual `references/*.md` files loaded when specific operations are needed
-
-This architecture minimizes context window usage while providing comprehensive GitHub functionality.
+This architecture minimizes context usage while providing full GitHub functionality.
 
 ## Requirements
 
 - Python 3.7+
-- No external dependencies (uses only stdlib)
+- No external dependencies
 - GitHub Personal Access Token
 
 ## License
 
 MIT
+
+---
+
+<div align="center">
+
+**[Report Bug](https://github.com/salujayatharth/github-skill/issues)** • **[Request Feature](https://github.com/salujayatharth/github-skill/issues)**
+
+</div>
